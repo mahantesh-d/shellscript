@@ -9,6 +9,7 @@ server=$testServer
 
 #figlet "Starting API Test"
 echo "Starting API Test"
+echo "Testing the email notification"
 exit 1
 	
 
