@@ -8,6 +8,7 @@ server=$testServer
 #server=$tmpIOTServer
 
 #figlet "Starting API Test"
+echo "Starting API Test"
 
 >common_result
 >common_result_hl
