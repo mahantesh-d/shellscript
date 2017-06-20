@@ -9,7 +9,8 @@ server=$testServer
 
 #figlet "Starting API Test"
 echo "Starting API Test"
-
+exit 1
+	
 
 >common_result
 >common_result_hl
