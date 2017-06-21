@@ -7,11 +7,7 @@ server=$testServer
 #server=$IOTServer
 #server=$tmpIOTServer
 
-#figlet "Starting API Test"
-echo "Starting API Test"
-echo "Testing the email notification"
-exit 1
-	
+figlet "Starting API Test"
 
 >common_result
 >common_result_hl
@@ -22,18 +18,14 @@ curl -w %{time_total} -is "$server$1" > $2
 K=$(head -1 $2)
 L=$(head -5 $2 | tail -1 | sed 's/Content-Length: //g')
 T=$(tail -1 $2)
-echo -e "$K\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t$L\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t$T\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t$2"
+echo -e "$K\t\t\t\t$L\t\t\t\t\t\t\t\t$T\t\t\t\t\t$2"
 cat $2 >> common_result
 head -1 $2 >> common_result_hl
 a=$(head -1 $2 | sed  's/[^0-9]//g' | sed 's/11//g')
 if [ $a -eq "200" ]
         then
-		true
-                echo $?
                 sleep 1
         else
-		! true
-		echo $?
                 sleep 5
 fi
 }
@@ -44,18 +36,14 @@ curl -w %{time_total} -is -X POST "$server$1" -d @$3 > $2
 K=$(head -1 $2)
 L=$(head -5 $2 | tail -1 | sed 's/Content-Length: //g')
 T=$(tail -1 $2)
+echo -e "$K\t\t\t\t$L\t\t\t\t\t\t\t\t$T\t\t\t\t\t$2"
 cat $2 >> common_result
-echo -e "$K\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t$L\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t$T\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t$2"
 head -1 $2 >> common_result_hl
 a=$(head -1 $2 | sed  's/[^0-9]//g' | sed 's/11//g')
 if [ $a -eq "200" ]
         then
-		true
-                echo $?
                 sleep 1
         else
-		! true
-                echo $?
                 sleep 5
 fi
 }
@@ -63,8 +51,8 @@ fi
 
 post_cassandra(){
 echo -e "\n\nTest Post for Cassandra\n"
-echo -e "\nStatus\t\t\t\t\t\t\t\t\tResponse-Time\t\t\t\tContent-Length\t\t\t\t\ttable-Name"
-echo -e "\n------\t\t\t\t\t\t\t\t\t--------------\t\t\t\t-------------\t\t\t\t\t----------\n"
+echo -e "\nStatus\t\t\t\tContent-Length\t\t\tResponse-Time\t\t\t\ttable-Name"
+echo -e "\n------\t\t\t\t--------------\t\t\t--------------\t\t\t\t----------\n"
 curl_post '/v1/sales/salesStatistic/stockAdjustment.json' 'Stock_Adjustment_POST' 'stockadjustment.json'
 curl_post '/v1/sales/salesStatistic/obtainDetail.json' 'Obtain_Detail_POST' 'obtaindetail.json'
 curl_post '/v1/sales/salesStatistic/subStockDetailTransfer.json' 'Sub_Stock_Detail_Transfer_POST' 'substockdetailtransfer.json'
@@ -86,8 +74,8 @@ sed -i "s/"$y"/"$RANDOM"/g" printhistory.json
 z=$(grep -n "matCode_key15" productmaster.json | sed s/[^0-9]//g | sed s/^...//g)
 sed -i "s/"$z"/"$RANDOM"/g" productmaster.json
 echo -e "\n\nTest Post for Postgresxl\n"
-echo -e "\nStatus\t\t\t\tContent-Length\t\t\t\tResponse-Time\t\t\t\t\ttable-Name"
-echo -e "\n------\t\t\t\t--------------\t\t\t\t-------------\t\t\t\t\t----------\n"
+echo -e "\nStatus\t\t\t\tContent-Length\t\t\tResponse-Time\t\t\t\ttable-Name"
+echo -e "\n------\t\t\t\t--------------\t\t\t--------------\t\t\t\t----------\n"
 curl_post '/v1/product/productSpecification/productMaster.json' 'Product_Master_POST' 'productmaster.json'
 curl_post '/v1/sales/salesChannel/printHistory.json' 'Print_history_POST' 'printhistory.json'
 curl_post '/v1/sales/salesChannel/locationMappingPlant.json' 'Location_Mapping_Plant_POST' 'locationmappingplant.json'
@@ -96,8 +84,8 @@ curl_post '/v1/sales/salesChannel/stampDelivery.json' 'Stamp_Delivery_POST' 'sta
 }
 get_cassandra(){
 echo -e "\n\nTesting Cassandra GET APIs\n"
-echo -e "\nStatus\t\t\t\t\t\t\t\t\tResponse-Time\t\t\t\tContent-Length\t\t\t\t\ttable-Name"
-echo -e "\n------\t\t\t\t\t\t\t\t\t--------------\t\t\t\t-------------\t\t\t\t\t----------\n"
+echo -e "\nStatus\t\t\t\tContent-Length\t\t\tResponse-Time\t\t\t\ttable-Name"
+echo -e "\n------\t\t\t\t--------------\t\t\t--------------\t\t\t\t----------\n"
 add_to_curl '/v1/sales/salesStatistic/stockAdjustment.json?filter=(&(locationCode=1177))' 'Stock_adjustment_GET'
 add_to_curl '/v1/sales/salesStatistic/obtainDetail.json?filter=(&(transactionType=pickup))' 'Obtain_detail_GET'
 add_to_curl '/v1/sales/salesStatistic/subStockDetailTransfer.json?filter=(&(locationCode=1177))' 'Sub_stock_detail_transfer_GET'
@@ -112,8 +100,8 @@ add_to_curl '/v1/sales/salesStatistic/printHistoryDetail.json?filter=(&(transact
 }
 get_cassandra_and(){
 echo -e "\n\nTesting of Cassandra With AND Condition\n"
-echo -e "\nStatus\t\t\t\t\t\t\t\t\tResponse-Time\t\t\t\tContent-Length\t\t\t\t\ttable-Name"
-echo -e "\n------\t\t\t\t\t\t\t\t\t--------------\t\t\t\t-------------\t\t\t\t\t----------\n"
+echo -e "\nStatus\t\t\t\tContent-Length\t\t\tResponse-Time\t\t\t\ttable-Name"
+echo -e "\n------\t\t\t\t--------------\t\t\t--------------\t\t\t\t----------\n"
 add_to_curl '/v1/sales/salesStatistic/stockAdjustment.json?filter=(&(adjustDateTime_start=20150909153750+0700)(transactionType=adjustStock))' 'Stock_Adjustment_GET_2_PAR'
 add_to_curl '/v1/sales/salesStatistic/obtainDetail.json?filter=(&(locationCode=1177)(transactionType=pickup))' 'Obtain_Detail_GET_2_PAR'
 add_to_curl '/v1/sales/salesStatistic/subStockDetailTransfer.json?filter=(&(locationCode=1177)(transferSubStockDateTime_start=20150909153750+0700))' 'Sub_Stock_Detail_Transfer_GET_2_PAR'
@@ -128,8 +116,8 @@ add_to_curl '/v1/sales/salesStatistic/printHistoryDetail.json?filter=(&(transact
 }
 get_postgresxl(){
 echo -e "\n\nTesting the Postgresxl GET APIs\n"
-echo -e "\nStatus\t\t\t\t\t\t\t\t\tResponse-Time\t\t\t\tContent-Length\t\t\t\t\ttable-Name"
-echo -e "\n------\t\t\t\t\t\t\t\t\t--------------\t\t\t\t-------------\t\t\t\t\t----------\n"
+echo -e "\nStatus\t\t\t\tContent-Length\t\t\tResponse-Time\t\t\t\ttable-Name"
+echo -e "\n------\t\t\t\t--------------\t\t\t--------------\t\t\t\t----------\n"
 add_to_curl '/v1/product/productSpecification/productMaster.json?filter=(&(matCode_key15=02))' 'Product_Master_GET'
 add_to_curl '/v1/sales/salesChannel/locationMappingPlant.json?filter=(&(locationCode_key0=02))' 'Location_Mapping_Plant_GET'
 add_to_curl '/v1/sales/salesChannel/locationShipTo.json?filter=(&(locationCode_key0=02))' 'Location_Ship_To_GET'
@@ -168,8 +156,8 @@ add_to_curl '/v1/sales/salesChannel/locationShipToDetail.json?filter=(&(location
 }
 get_postgresxl_and(){
 echo -e "\n\nTesting the Postgrexl APIs for AND Condition\n"
-echo -e "\nStatus\t\t\t\t\t\t\t\t\tResponse-Time\t\t\t\tContent-Length\t\t\t\t\ttable-Name"
-echo -e "\n------\t\t\t\t\t\t\t\t\t--------------\t\t\t\t-------------\t\t\t\t\t----------\n"
+echo -e "\nStatus\t\t\t\tContent-Length\t\t\tResponse-Time\t\t\t\ttable-Name"
+echo -e "\n------\t\t\t\t--------------\t\t\t--------------\t\t\t\t----------\n"
 add_to_curl '/v1/product/productSpecification/productMaster.json?filter=(&(matCode_key15=02)(company_key0=WDS))' 'Product_Master_GET_2_PAR'
 add_to_curl '/v1/sales/salesChannel/locationMappingPlant.json?filter=(&(locationCode_key0=02)(company_key1=ais))' 'Location_Mapping_Plant_GET_2_PAR'
 add_to_curl '/v1/sales/salesChannel/locationShipTo.json?filter=(&(locationCode_key0=02)(shipToDefaultFlag_data=Y))' 'Location_Ship_To_GET_2_PAR'
@@ -181,7 +169,7 @@ add_to_curl '/v1/sales/salesChannel/locationSubstock.json?filter=(&(subStock_dat
 add_to_curl '/v1/sales/salesChannel/vendorMaster.json?filter=(&(vendorCode_key0=1111040462)(createDateTime_data=20170420085959+0700))' 'Vendor_Master_GET_2_PAR'
 add_to_curl '/v1/sales/salesChannel/supplierMaster.json?filter=(&(supplierCode_key0=1111011765)(updateBy_data=phxsales))' 'Supplier_Master_GET_2_PAR'
 add_to_curl '/v1/sales/salesChannel/configRouteGroup.json?filter=(&(updateBy_data=phxsales)(stampDelivery_data=BK1))' 'Config_Route_Group_GET_2_PAR'
-add_to_curl '/v1/sales/salesChannel/masterData.json?filter=(&(masterKey_key1=movementType)(subkey1_key3=goodsReplace))' 'Master_Data_GET_2_PAR'
+add_to_curl '/v1/sales/salesChannel/masterData.json?filter=(&(createDateTime_data=20170420085900+0700)(masterValue_key1=702))' 'Master_Data_GET_2_PAR'
 add_to_curl '/v1/product/productSpecification/deviceSpecification.json?filter=(&(2GNetwork_data=GSM 850/900/1800/1900 MHz)(bluetooth_data=v4.0, A2DP))' 'Device_Specification_GET_2_PAR'
 add_to_curl '/v1/sales/salesChannel/language.json?filter=(&(language_data=TH)(elementName_key0=Active))' 'Language_GET_2_PAR'
 add_to_curl '/v1/sales/salesChannel/runningFormat.json?filter=(&(createBy_data=maha)(updateDateTime_data=20160930153750+0700))' 'Running_Format_GET_2_PAR'
@@ -207,9 +195,9 @@ add_to_curl '/v1/sales/salesChannel/configRouteGroupDetail.json?filter=(&(routeG
 add_to_curl '/v1/sales/salesChannel/locationShipToDetail.json?filter=(&(locationCode_key0=1177)(locationSoi_data=53))' 'Location_Ship_To_Detail_View_GET_2_PAR'
 }
 get_postgresxl_or(){
-echo "Testing postgresxl for OR"
-echo -e "\nStatus\t\t\t\t\t\t\t\t\tResponse-Time\t\t\t\tContent-Length\t\t\t\t\ttable-Name"
-echo -e "\n------\t\t\t\t\t\t\t\t\t--------------\t\t\t\t-------------\t\t\t\t\t----------\n"
+echo "\n\nTesting postgresxl for OR\n"
+echo -e "\nStatus\t\t\t\tContent-Length\t\t\tResponse-Time\t\t\t\ttable-Name"
+echo -e "\n------\t\t\t\t--------------\t\t\t--------------\t\t\t\t----------\n"
 add_to_curl '/v1/product/productSpecification/productMaster.json?filter=(|(matCode_key15=02)(company_key0=WDS))' 'Product_Master_GET_2_PAR'
 add_to_curl '/v1/sales/salesChannel/locationMappingPlant.json?filter=(|(locationCode_key0=02)(company_key1=ais))' 'Location_Mapping_Plant_GET_2_PAR'
 add_to_curl '/v1/sales/salesChannel/locationShipTo.json?filter=(|(locationCode_key0=02)(shipToDefaultFlag_data=Y))' 'Location_Ship_To_GET_2_PAR'
@@ -221,7 +209,7 @@ add_to_curl '/v1/sales/salesChannel/locationSubstock.json?filter=(|(subStock_dat
 add_to_curl '/v1/sales/salesChannel/vendorMaster.json?filter=(|(vendorCode_key0=1111040462)(createDateTime_data=20170420085959+0700))' 'Vendor_Master_GET_2_PAR'
 add_to_curl '/v1/sales/salesChannel/supplierMaster.json?filter=(|(supplierCode_key0=1111011765)(updateBy_data=phxsales))' 'Supplier_Master_GET_2_PAR'
 add_to_curl '/v1/sales/salesChannel/configRouteGroup.json?filter=(|(updateBy_data=phxsales)(stampDelivery_data=BK1))' 'Config_Route_Group_GET_2_PAR'
-add_to_curl '/v1/sales/salesChannel/masterData.json?filter=(|(masterValue_key1=933)(subkey1_key3=goodsReplace))' 'Master_Data_GET_2_PAR'
+add_to_curl '/v1/sales/salesChannel/masterData.json?filter=(|(createDateTime_data=20170420085900+0700)(masterValue_key1=702))' 'Master_Data_GET_2_PAR'
 add_to_curl '/v1/product/productSpecification/deviceSpecification.json?filter=(|(2GNetwork_data=GSM 850/900/1800/1900 MHz)(bluetooth_data=v4.0, A2DP))' 'Device_Specification_GET_2_PAR'
 add_to_curl '/v1/sales/salesChannel/language.json?filter=(|(language_data=TH)(elementName_key0=Active))' 'Language_GET_2_PAR'
 add_to_curl '/v1/sales/salesChannel/runningFormat.json?filter=(|(createBy_data=maha)(updateDateTime_data=20160930153750+0700))' 'Running_Format_GET_2_PAR'
@@ -248,9 +236,9 @@ add_to_curl '/v1/sales/salesChannel/locationShipToDetail.json?filter=(|(location
 }
 
 get_cassandra_or(){
-echo "Testing Cassandra for OR"
-echo -e "\nStatus\t\t\t\t\t\t\t\t\tResponse-Time\t\t\t\tContent-Length\t\t\t\t\ttable-Name"
-echo -e "\n------\t\t\t\t\t\t\t\t\t--------------\t\t\t\t-------------\t\t\t\t\t----------\n"
+echo "\n\nTesting Cassandra for OR\n"
+echo -e "\nStatus\t\t\t\tContent-Length\t\t\tResponse-Time\t\t\t\ttable-Name"
+echo -e "\n------\t\t\t\t--------------\t\t\t--------------\t\t\t\t----------\n"
 add_to_curl '/v1/sales/salesStatistic/stockAdjustment.json?filter=(|(locationCode=1177))' 'Stock_Adjustment_GET_2_PAR'
 add_to_curl '/v1/sales/salesStatistic/obtainDetail.json?filter=(|(transactionType=pickup))' 'Obtain_Detail_GET_2_PAR'
 add_to_curl '/v1/sales/salesStatistic/subStockDetailTransfer.json?filter=(|(transferSubStockNo=TS0000275157452))' 'Sub_Stock_Detail_Transfer_GET_2_PAR'
